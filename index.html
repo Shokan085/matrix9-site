@@ -10,7 +10,7 @@ body{margin:0;font-family:Arial;background:#090b12;color:#fff;text-align:center}
 h1{color:#00f2ff}
 input,button{width:100%;padding:14px;border-radius:12px;border:none;margin:10px 0;font-size:16px}
 button{background:#00f2ff;color:#000;font-weight:bold}
-.result{margin-top:20px;background:#0c101b;padding:15px;border-radius:12px;font-size:14px}
+.result{margin-top:20px;background:#0c101b;padding:15px;border-radius:12px;font-size:14px;text-align:left}
 table{width:100%;border-collapse:collapse;margin-top:15px}
 td,th{border:1px solid #00f2ff;padding:10px;font-size:16px;text-align:center;border-radius:8px}
 .highlight{background:#00f2ff;color:#000;font-weight:bold}
@@ -30,22 +30,16 @@ td,th{border:1px solid #00f2ff;padding:10px;font-size:16px;text-align:center;bor
 
 <script>
 const advice = {
-1: "Характер — сила воли, лидерство, умение добиваться целей.",
-2: "Энергия — гармония, работа в команде, дипломатичность.",
-3: "Творчество, таланты, любознательность.",
-4: "Стабильность и дисциплина — развивайте эти качества.",
-5: "Логика, аналитика, умение принимать решения.",
-6: "Заботливость, ответственность, внимание к другим.",
-7: "Удача, интуиция, связь с высшими силами.",
-8: "Честность, долг, финансовая хватка, управленческие способности.",
-9: "Интеллект, память, вдохновение, помощь другим."
+1:"Сила воли, лидерство, настойчивость",
+2:"Гармония, работа в команде, дипломатичность",
+3:"Творчество, таланты, любознательность",
+4:"Дисциплина, стабильность, упорство",
+5:"Логика, аналитика, умение принимать решения",
+6:"Слабая зона, развивайте заботу и ответственность",
+7:"Удача, интуиция, связь с высшими силами",
+8:"Честность, финансовая хватка, ответственность",
+9:"Интеллект, память, вдохновение, помощь другим"
 };
-
-function sumDigits(arr){
-    let s = arr.reduce((a,b)=>a+b,0);
-    while(s>9) s = s.toString().split('').reduce((a,b)=>a+ +b,0);
-    return s;
-}
 
 function calc(){
     let d=document.getElementById("date").value.replace(/\D/g,'');
@@ -67,46 +61,43 @@ function calc(){
     let C = A - 2*firstDay;
     let C_digits = C.toString().split('').map(Number);
 
-    // D = сумма цифр C
+    // D = сумма цифр C (одно значение)
     let D = C_digits.reduce((a,b)=>a+b,0);
     let D_digits = [D];
 
-    // Собираем все цифры для матрицы
-    let allDigits = digits.concat(A_digits, B_digits, C_digits, D_digits);
+    // Собираем все цифры
+    let allDigits = digits.concat(A_digits,B_digits,C_digits,D_digits);
 
     // Подсчёт цифр 1-9
     let counts = {};
     for(let i=1;i<=9;i++) counts[i]=0;
-    allDigits.forEach(d=>{ if(d>=1 && d<=9) counts[d]++; });
+    allDigits.forEach(n=>{if(n>=1 && n<=9) counts[n]++;});
 
-    // Число судьбы
-    let totalSum = B_digits.length>1 ? B_digits.join('') : B_digits[0];
+    // Число судьбы = B (однозначное или двухзначное)
+    let totalSum = B;
 
-    // Результат
+    // Результат с расшифровкой
     let resText = `<b>Дата рождения:</b> ${document.getElementById("date").value}<br>`;
     resText += `<b>Число судьбы:</b> ${totalSum}<br><br>`;
     resText += `<b>Расшифровка цифр:</b><br>`;
     for(let i=1;i<=9;i++){
-        resText += `${i}: ${advice[i]} ${counts[i]>1? '('+i.toString().repeat(counts[i])+')': '('+i+')'}<br>`;
+        resText += `${i}: ${advice[i]} (${i.toString().repeat(counts[i]) || '-'})<br>`;
     }
     document.getElementById("res").innerHTML = resText;
 
-    // Создание таблицы 3x3
+    // Матрица 3x3 Пифагора
     let html = "<table><tr>";
-    html += `<td>${counts[1]>0? "1".repeat(counts[1]) : "-"}</td>`;
+    html += `<td>${counts[1]>0? "1".repeat(counts[1]):"-"}</td>`;
     html += `<td>-</td>`;
-    html += `<td class="${counts[7]>0?'highlight':''}">${counts[7]>0? "7".repeat(counts[7]) : "-"}</td></tr>`;
-
+    html += `<td class="${counts[7]>0?'highlight':''}">${counts[7]>0? "7".repeat(counts[7]):"-"}</td></tr>`;
     html += "<tr>";
-    html += `<td>${counts[2]>0? "2".repeat(counts[2]) : "-"}</td>`;
-    html += `<td>${counts[5]>0? "5".repeat(counts[5]) : "-"}</td>`;
-    html += `<td class="${counts[8]>0?'highlight':''}">${counts[8]>0? "8".repeat(counts[8]) : "-"}</td></tr>`;
-
+    html += `<td>${counts[2]>0? "2".repeat(counts[2]):"-"}</td>`;
+    html += `<td>${counts[5]>0? "5".repeat(counts[5]):"-"}</td>`;
+    html += `<td class="${counts[8]>0?'highlight':''}">${counts[8]>0? "8".repeat(counts[8]):"-"}</td></tr>`;
     html += "<tr>";
-    html += `<td>${counts[3]>0? "3".repeat(counts[3]) : "-"}</td>`;
+    html += `<td>${counts[3]>0? "3".repeat(counts[3]):"-"}</td>`;
     html += `<td>-</td>`;
-    html += `<td class="${counts[9]>0?'highlight':''}">${counts[9]>0? "9".repeat(counts[9]) : "-"}</td></tr>`;
-
+    html += `<td class="${counts[9]>0?'highlight':''}">${counts[9]>0? "9".repeat(counts[9]):"-"}</td></tr>`;
     document.getElementById("matrix3x3").innerHTML = "<b>Матрица Пифагора:</b>" + html;
 }
 </script>
