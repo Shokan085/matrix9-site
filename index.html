@@ -5,101 +5,195 @@
 <title>Matrix9 — Нумерология</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{margin:0;font-family:Arial;background:#090b12;color:#fff;text-align:center}
-.card{max-width:500px;margin:40px auto;background:#131722;border-radius:20px;padding:25px;box-shadow:0 0 35px #00f2ff44}
-h1{color:#00f2ff}
-input,button{width:100%;padding:14px;border-radius:12px;border:none;margin:10px 0;font-size:16px}
-button{background:#00f2ff;color:#000;font-weight:bold}
-.result{margin-top:20px;background:#0c101b;padding:15px;border-radius:12px;font-size:14px;text-align:left}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-td,th{border:1px solid #00f2ff;padding:10px;font-size:16px;text-align:center;border-radius:8px}
-.highlight{background:#00f2ff;color:#000;font-weight:bold}
+/* --- Общие стили --- */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #090b12;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* --- Карточка калькулятора --- */
+.card {
+    max-width: 500px;
+    width: 100%;
+    background-color: #131722;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 0 35px rgba(0, 242, 255, 0.27);
+}
+
+/* --- Заголовки --- */
+h1 {
+    color: #00f2ff;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+p.subtitle {
+    text-align: center;
+    margin: 0 0 20px 0;
+}
+
+/* --- Поля ввода и кнопки --- */
+input, button {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+input {
+    background-color: #0c101b;
+    color: #fff;
+}
+
+button {
+    background-color: #00f2ff;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* --- Результаты --- */
+.result {
+    margin-top: 20px;
+    background-color: #0c101b;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* --- Таблица матрицы --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+td {
+    border: 1px solid #00f2ff;
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.highlight {
+    background-color: #00f2ff;
+    color: #000;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
+
 <div class="card">
-<h1>Matrix9</h1>
-<p>Бесплатный нумерологический калькулятор</p>
+    <h1>Matrix9</h1>
+    <p class="subtitle">Бесплатный нумерологический калькулятор</p>
 
-<input id="date" placeholder="Дата рождения (ДДММГГГГ)">
-<button onclick="calc()">Рассчитать</button>
+    <input id="date" placeholder="Дата рождения (ДДММГГГГ)" type="text">
+    <button onclick="calc()">Рассчитать</button>
 
-<div id="res" class="result"></div>
-<div id="matrix3x3" class="result"></div>
+    <div id="res" class="result"></div>
+    <div id="matrix3x3" class="result"></div>
 </div>
 
 <script>
+// --- Расшифровка цифр ---
 const advice = {
-1:"Сила воли, лидерство, настойчивость",
-2:"Гармония, работа в команде, дипломатичность",
-3:"Творчество, таланты, любознательность",
-4:"Дисциплина, стабильность, упорство",
-5:"Логика, аналитика, умение принимать решения",
-6:"Слабая зона, развивайте заботу и ответственность",
-7:"Удача, интуиция, связь с высшими силами",
-8:"Честность, финансовая хватка, ответственность",
-9:"Интеллект, память, вдохновение, помощь другим"
+    1: "Сила воли, лидерство, настойчивость",
+    2: "Гармония, работа в команде, дипломатичность",
+    3: "Творчество, таланты, любознательность",
+    4: "Дисциплина, стабильность, упорство",
+    5: "Логика, аналитика, умение принимать решения",
+    6: "Слабая зона, развивайте заботу и ответственность",
+    7: "Удача, интуиция, связь с высшими силами",
+    8: "Честность, финансовая хватка, ответственность",
+    9: "Интеллект, память, вдохновение, помощь другим"
 };
 
-function calc(){
-    let d=document.getElementById("date").value.replace(/\D/g,'');
-    if(d.length!=8){alert("Введите дату в формате ДДММГГГГ"); return;}
+// --- Основная функция расчёта ---
+function calc() {
+    const input = document.getElementById("date").value.replace(/\D/g,'');
+    if (input.length !== 8) {
+        alert("Введите дату в формате ДДММГГГГ");
+        return;
+    }
 
     // Убираем нули
-    let digits = d.split('').map(Number).filter(n=>n!==0);
+    const digits = input.split('').map(Number).filter(n => n !== 0);
 
-    // Вычисляем A
-    let A = digits.reduce((a,b)=>a+b,0);
-    let A_digits = A.toString().split('').map(Number);
+    // A = сумма всех цифр
+    const A = digits.reduce((a,b) => a+b, 0);
+    const A_digits = A.toString().split('').map(Number);
 
     // B = сумма цифр A
-    let B = A_digits.reduce((a,b)=>a+b,0);
-    let B_digits = B.toString().split('').map(Number);
+    const B = A_digits.reduce((a,b) => a+b, 0);
+    const B_digits = B.toString().split('').map(Number);
 
-    // C = A - 2*первая цифра дня
-    let firstDay = digits[0];
-    let C = A - 2*firstDay;
-    let C_digits = C.toString().split('').map(Number);
+    // C = A - 2 * первая цифра дня
+    const firstDay = digits[0];
+    const C = A - 2 * firstDay;
+    const C_digits = C.toString().split('').map(Number);
 
     // D = сумма цифр C (одно значение)
-    let D = C_digits.reduce((a,b)=>a+b,0);
-    let D_digits = [D];
+    const D = C_digits.reduce((a,b) => a+b, 0);
+    const D_digits = [D];
 
-    // Собираем все цифры
-    let allDigits = digits.concat(A_digits,B_digits,C_digits,D_digits);
+    // Собираем все цифры для матрицы
+    const allDigits = digits.concat(A_digits, B_digits, C_digits, D_digits);
 
     // Подсчёт цифр 1-9
-    let counts = {};
-    for(let i=1;i<=9;i++) counts[i]=0;
-    allDigits.forEach(n=>{if(n>=1 && n<=9) counts[n]++;});
+    const counts = {};
+    for (let i=1; i<=9; i++) counts[i] = 0;
+    allDigits.forEach(n => { if (n>=1 && n<=9) counts[n]++; });
 
-    // Число судьбы = B (однозначное или двухзначное)
-    let totalSum = B;
+    // Число судьбы
+    const totalSum = B;
 
-    // Результат с расшифровкой
+    // --- Вывод расшифровки ---
     let resText = `<b>Дата рождения:</b> ${document.getElementById("date").value}<br>`;
     resText += `<b>Число судьбы:</b> ${totalSum}<br><br>`;
     resText += `<b>Расшифровка цифр:</b><br>`;
-    for(let i=1;i<=9;i++){
-        resText += `${i}: ${advice[i]} (${i.toString().repeat(counts[i]) || '-'})<br>`;
+    for (let i=1; i<=9; i++) {
+        resText += `${i}: ${advice[i]} (${counts[i] ? i.toString().repeat(counts[i]) : '-'})<br>`;
     }
     document.getElementById("res").innerHTML = resText;
 
-    // Матрица 3x3 Пифагора
+    // --- Таблица 3x3 ---
     let html = "<table><tr>";
-    html += `<td>${counts[1]>0? "1".repeat(counts[1]):"-"}</td>`;
+    html += `<td>${counts[1]? "1".repeat(counts[1]) : "-"}</td>`;
     html += `<td>-</td>`;
-    html += `<td class="${counts[7]>0?'highlight':''}">${counts[7]>0? "7".repeat(counts[7]):"-"}</td></tr>`;
+    html += `<td class="${counts[7]? 'highlight':''}">${counts[7]? "7".repeat(counts[7]) : "-"}</td></tr>`;
+
     html += "<tr>";
-    html += `<td>${counts[2]>0? "2".repeat(counts[2]):"-"}</td>`;
-    html += `<td>${counts[5]>0? "5".repeat(counts[5]):"-"}</td>`;
-    html += `<td class="${counts[8]>0?'highlight':''}">${counts[8]>0? "8".repeat(counts[8]):"-"}</td></tr>`;
+    html += `<td>${counts[2]? "2".repeat(counts[2]) : "-"}</td>`;
+    html += `<td>${counts[5]? "5".repeat(counts[5]) : "-"}</td>`;
+    html += `<td class="${counts[8]? 'highlight':''}">${counts[8]? "8".repeat(counts[8]) : "-"}</td></tr>`;
+
     html += "<tr>";
-    html += `<td>${counts[3]>0? "3".repeat(counts[3]):"-"}</td>`;
+    html += `<td>${counts[3]? "3".repeat(counts[3]) : "-"}</td>`;
     html += `<td>-</td>`;
-    html += `<td class="${counts[9]>0?'highlight':''}">${counts[9]>0? "9".repeat(counts[9]):"-"}</td></tr>`;
+    html += `<td class="${counts[9]? 'highlight':''}">${counts[9]? "9".repeat(counts[9]) : "-"}</td></tr>`;
+
     document.getElementById("matrix3x3").innerHTML = "<b>Матрица Пифагора:</b>" + html;
 }
 </script>
+
 </body>
 </html>
